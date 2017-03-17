@@ -31,6 +31,10 @@ label {
     display: inline-block;
 }
 
+.explanation {
+    max-width: 500px;
+}
+
 .new_game {
     margin-bottom: 10px;
     border-bottom: 1px solid black;

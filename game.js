@@ -38,16 +38,15 @@ class Cell {
         return this.nearby_bombs == 0;
     }
 
-    getNearbyBombs() {
-        return this.nearby_bombs;
-    }
-
     isOpened() {
         return this.opened;
     }
 
     open() {
         this.opened = true;
+        if (!this.hasNoNearbyBombs()) {
+            this.cell.textContent = (String) (this.nearby_bombs);
+        }
         if (allNonBombsOpened(this.board)) {
             lost = true;
             document.getElementById("status").textContent = "Game won!";
@@ -112,11 +111,7 @@ function generateBoard() {
                 board_array[x][y].getCellElement().textContent = "B";
             } else {
                 board_array[x][y].setNearbyBombs();
-                if (board_array[x][y].hasNoNearbyBombs()) {
-                    board_array[x][y].getCellElement().textContent = " ";
-                } else {
-                    board_array[x][y].getCellElement().textContent = board_array[x][y].getNearbyBombs();
-                }
+                board_array[x][y].getCellElement().textContent = " ";
             }
         }
     }
