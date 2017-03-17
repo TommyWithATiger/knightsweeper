@@ -14,6 +14,7 @@ class Cell {
         this.cell = document.createElement("div");
         this.cell.classList.toggle("cell", true);
         this.cell.classList.toggle("cell_closed", true);
+        this.cell.textContent = " ";
         this.cell.setAttribute("x", x);
         this.cell.setAttribute("y", y);
     }
@@ -45,7 +46,7 @@ class Cell {
     open() {
         this.opened = true;
         if (!this.hasNoNearbyBombs()) {
-            this.cell.textContent = (String) (this.nearby_bombs);
+            this.cell.textContent = (String)(this.nearby_bombs);
         }
         if (allNonBombsOpened(this.board)) {
             lost = true;
@@ -107,12 +108,7 @@ function generateBoard() {
 
     for (let x = 0; x < width; x++) {
         for (let y = 0; y < height; y++) {
-            if (board_array[x][y].hasBomb()) {
-                board_array[x][y].getCellElement().textContent = "B";
-            } else {
-                board_array[x][y].setNearbyBombs();
-                board_array[x][y].getCellElement().textContent = " ";
-            }
+            board_array[x][y].setNearbyBombs();
         }
     }
 
@@ -175,9 +171,10 @@ function allNonBombsOpened(board) {
 function displayLost(board) {
     for (let x = 0; x < board.length; x++) {
         for (let y = 0; y < board[0].length; y++) {
-            let cell = board[x][y]
+            let cell = board[x][y];
             if (cell.hasBomb() && !cell.isFlagged()) {
                 cell.getCellElement().classList.toggle('cell_bomb', true);
+                cell.getCellElement().textContent = "B";
             } else if (cell.isFlagged() && !cell.hasBomb()) {
                 cell.getCellElement().classList.toggle("cell_flagged_false", true);
             }
