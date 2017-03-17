@@ -10,14 +10,66 @@
     font-family: Andale Mono;
 }
 
+.cell:hover {
+    cursor: default;
+}
+
+input[type="number"] {
+    width: 150px;
+    height: 20px;
+    border: 1px solid gray;
+    padding-left: 5px;
+    display: block;
+}
+
+label {
+    font-weight: bold;
+}
+
 .board {
     border: 2px solid gray;
     display: inline-block;
 }
 
+.new_game {
+    margin-bottom: 10px;
+    border-bottom: 1px solid black;
+    padding-bottom: 10px;
+}
+
+.controls {
+    margin-top: 10px;
+    border-top: 1px solid black;
+    padding-top: 10px;
+}
+
+button {
+    margin: 5px;
+    width: 100px;
+    height: 30px;
+    display: block;
+    border: 1px solid grey;
+    background-color: #fff;
+    border-radius: 1px;
+}
+
+button:hover {
+    cursor: pointer;
+    background-color: #eee;
+}
+
+.bold {
+    font-weight: bold;
+}
+
+.new_game > button {
+    margin-left: 25px;
+}
+
 .game_data {
     display: inline-block;
     height: 100%;
+    vertical-align: top;
 }
 
 .in-line {
@@ -35,12 +87,19 @@
 
 .cell_bomb {
     background-color: #000000;
+    border: 1px solid #000000;
 }
 
 .cell_flagged {
     background-color: #0000ff;
     border: 1px solid #000000;
     color: #0000ff;
+}
+
+.cell_flagged_false {
+    background-color: #ff0000;
+    border: 1px solid #000000;
+    color: #ff0000;
 }
 
 .row {

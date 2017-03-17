@@ -1,12 +1,68 @@
 let lost = false;
 
-function makeCell() {
-    return {
-        'bomb': false,
-        'nearby_bombs': 0,
-        'opened': false,
-        'flagged': false
+
+class Cell {
+
+    constructor(x, y, board) {
+        this.x = x;
+        this.y = y;
+        this.board = board;
+        this.bomb = false;
+        this.nearby_bombs = 0;
+        this.flagged = false;
+        this.opened = false;
+        this.cell = document.createElement("div");
+        this.cell.classList.toggle("cell", true);
+        this.cell.classList.toggle("cell_closed", true);
+        this.cell.setAttribute("x", x);
+        this.cell.setAttribute("y", y);
     }
+
+    getCellElement() {
+        return this.cell;
+    }
+
+    hasBomb() {
+        return this.bomb;
+    }
+
+    setBomb() {
+        this.bomb = true;
+    }
+
+    setNearbyBombs() {
+        this.nearby_bombs = getNearbyBombs(this.board, this.x, this.y);
+    }
+
+    hasNoNearbyBombs() {
+        return this.nearby_bombs == 0;
+    }
+
+    getNearbyBombs() {
+        return this.nearby_bombs;
+    }
+
+    isOpened() {
+        return this.opened;
+    }
+
+    open() {
+        this.opened = true;
+        if (allNonBombsOpened(this.board)) {
+            lost = true;
+            document.getElementById("status").textContent = "Game won!";
+            displayLost(this.board)
+        }
+    }
+
+    isFlagged() {
+        return this.flagged;
+    }
+
+    toggleFlagged() {
+        this.flagged = !this.flagged;
+    }
+
 }
 
 
@@ -16,6 +72,8 @@ function generateBoard() {
     while (board.hasChildNodes()) {
         board.removeChild(board.firstChild);
     }
+
+    document.getElementById("status").textContent = "Running";
 
     let width = parseInt(document.getElementById("columns").value);
     let height = parseInt(document.getElementById("rows").value);
@@ -28,15 +86,9 @@ function generateBoard() {
         rowEl.setAttribute("class", "row");
         board.appendChild(rowEl);
         for (let y = 0; y < height; y++) {
-            board_array[x][y] = makeCell();
-            let cellEl = document.createElement("div");
-            cellEl.classList.toggle("cell", true);
-            cellEl.classList.toggle("cell_closed", true);
-            cellEl.setAttribute("x", x);
-            cellEl.setAttribute("y", y);
-            board_array[x][y]['cell'] = cellEl;
+            board_array[x][y] = new Cell(x, y, board_array);
             setupCell(board_array[x][y]);
-            rowEl.appendChild(cellEl);
+            rowEl.appendChild(board_array[x][y].getCellElement());
         }
     }
 
@@ -48,29 +100,28 @@ function generateBoard() {
         let x = Math.floor(Math.random() * width);
         let y = Math.floor(Math.random() * height);
 
-        if (!board_array[x][y]['bomb']) {
+        if (!board_array[x][y].hasBomb()) {
             bombs--;
-            board_array[x][y]['bomb'] = true;
+            board_array[x][y].setBomb();
         }
     }
 
     for (let x = 0; x < width; x++) {
         for (let y = 0; y < height; y++) {
-            if (board_array[x][y]['bomb']) {
-                board_array[x][y]['cell'].textContent = "B";
+            if (board_array[x][y].hasBomb()) {
+                board_array[x][y].getCellElement().textContent = "B";
             } else {
-                board_array[x][y]['nearby_bombs'] = getNearbyBombs(board_array, x, y);
-                if (board_array[x][y]['nearby_bombs'] != 0) {
-                    board_array[x][y]['cell'].textContent = board_array[x][y]['nearby_bombs']
+                board_array[x][y].setNearbyBombs();
+                if (board_array[x][y].hasNoNearbyBombs()) {
+                    board_array[x][y].getCellElement().textContent = " ";
                 } else {
-                    board_array[x][y]['cell'].textContent = " ";
+                    board_array[x][y].getCellElement().textContent = board_array[x][y].getNearbyBombs();
                 }
             }
         }
     }
 
     document.body.onkeydown = function (e) {
-        console.log("hei");
         let cellElList = document.getElementsByClassName("hovered");
         if (cellElList.length != 1) return;
         let cellEl = cellElList[0];
@@ -84,43 +135,67 @@ function generateBoard() {
 
         let cell = board_array[cellEl.getAttribute("x")][cellEl.getAttribute("y")];
 
-        if (cell['opened'] || lost) return;
+        if (cell.isOpened() || lost) return;
 
 
         if (keycode == 70) {
-            if (cell['flagged']) {
+            if (cell.isFlagged()) {
                 document.getElementById("remaining_bombs").textContent = (String)(parseInt(document.getElementById("remaining_bombs").textContent) + 1);
             } else {
                 if (parseInt(document.getElementById("remaining_bombs").textContent) == 0) return;
                 document.getElementById("remaining_bombs").textContent = (String)(parseInt(document.getElementById("remaining_bombs").textContent) - 1);
             }
-            cell['flagged'] = !cell['flagged'];
-            cell['cell'].classList.toggle('cell_flagged', cell['flagged']);
+            cell.toggleFlagged();
+            cell.getCellElement().classList.toggle('cell_flagged', cell.isFlagged());
         }
 
         else if (keycode == 68) {
-            if (cell['flagged']) return;
-            if (cell['bomb']) {
-                cell['cell'].classList.toggle('cell_bomb', true);
+            if (cell.isFlagged()) return;
+            if (cell.hasBomb()) {
+                displayLost(board_array);
                 lost = true;
+                document.getElementById("status").textContent = "Game lost!"
             } else {
-                if (cell['nearby_bombs'] == 0) {
+                if (cell.hasNoNearbyBombs()) {
                     cascadeZero(board_array, parseInt(cellEl.getAttribute("x")), parseInt(cellEl.getAttribute("y")))
                 }
-                cell['cell'].classList.toggle('cell_open', true);
-                cell['cell'].classList.toggle('cell_closed', false);
-                cell['opened'] = true;
+                cell.getCellElement().classList.toggle('cell_open', true);
+                cell.getCellElement().classList.toggle('cell_closed', false);
+                cell.open();
             }
         }
     };
 }
 
+function allNonBombsOpened(board) {
+    for (let x = 0; x < board.length; x++) {
+        for (let y = 0; y < board[0].length; y++) {
+            let cell = board[x][y];
+            if (!cell.hasBomb() && !cell.isOpened()) return false;
+        }
+    }
+    return true;
+}
+
+function displayLost(board) {
+    for (let x = 0; x < board.length; x++) {
+        for (let y = 0; y < board[0].length; y++) {
+            let cell = board[x][y]
+            if (cell.hasBomb() && !cell.isFlagged()) {
+                cell.getCellElement().classList.toggle('cell_bomb', true);
+            } else if (cell.isFlagged() && !cell.hasBomb()) {
+                cell.getCellElement().classList.toggle("cell_flagged_false", true);
+            }
+        }
+    }
+}
+
 function cascadeZero(board, x, y) {
-    if (isInBoard(board, x, y) && !board[x][y]['opened']) {
-        board[x][y]['cell'].classList.toggle('cell_open', true);
-        board[x][y]['cell'].classList.toggle('cell_closed', false);
-        board[x][y]['opened'] = true;
-        if (board[x][y]['nearby_bombs'] == 0) {
+    if (isInBoard(board, x, y) && !board[x][y].isOpened() && !board[x][y].isFlagged()) {
+        board[x][y].getCellElement().classList.toggle('cell_open', true);
+        board[x][y].getCellElement().classList.toggle('cell_closed', false);
+        board[x][y].open();
+        if (board[x][y].hasNoNearbyBombs()) {
             cascadeZero(board, x + 2, y + 1);
             cascadeZero(board, x + 2, y - 1);
             cascadeZero(board, x - 2, y + 1);
@@ -138,12 +213,12 @@ function isInBoard(board, x, y) {
 }
 
 function setupCell(cell) {
-    cell['cell'].onmouseover = function (e) {
-        cell['cell'].classList.toggle('hovered', true);
+    cell.getCellElement().onmouseover = function (e) {
+        cell.getCellElement().classList.toggle('hovered', true);
     };
 
-    cell['cell'].onmouseout = function (e) {
-        cell['cell'].classList.toggle('hovered', false);
+    cell.getCellElement().onmouseout = function (e) {
+        cell.getCellElement().classList.toggle('hovered', false);
     };
 }
 
@@ -153,7 +228,7 @@ function getNearbyBombs(board, x, y) {
 }
 
 function hasBomb(board, x, y) {
-    return isInBoard(board, x, y) && board[x][y].bomb;
+    return isInBoard(board, x, y) && board[x][y].hasBomb();
 }
 
 window.onload = function () {

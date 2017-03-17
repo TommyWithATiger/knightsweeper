@@ -8,38 +8,74 @@
 </head>
 <body>
 <main>
+    <h1>Knightsweeper</h1>
     <div class="game">
         <div id="board" class="board">
 
         </div>
         <div id="game_data" class="game_data">
             <div>
-                <div>
-                    <label>
-                        Bombs
-                        <input id="bombs" type="number" value="100"/>
-                    </label>
+                <div class="new_game">
+                    <div>
+                        <label>
+                            Bombs
+                            <input id="bombs" type="number" value="100"/>
+                        </label>
+                    </div>
+                    <div>
+                        <label>
+                            Rows:
+                            <input id="rows" type="number" value="20"/>
+                        </label>
+                    </div>
+
+                    <div>
+                        <label>
+                            Columns:
+                            <input id="columns" type="number" value="20"/>
+                        </label>
+                    </div>
+                    <button onclick="generateBoard()">New Game</button>
                 </div>
                 <div>
-                    <label>
-                        Rows:
-                        <input id="rows" type="number" value="20"/>
-                    </label>
+                    <div class="in-line bold">
+                        Remaining flags:
+                    </div>
+                    <div class="in-line" id="remaining_bombs">
+
+                    </div>
                 </div>
 
                 <div>
-                    <label>
-                        Columns:
-                        <input id="columns" type="number" value="20"/>
-                    </label>
+                    <div class="in-line bold">
+                        Status:
+                    </div>
+                    <div class="in-line" id="status">
+
+                    </div>
                 </div>
-                Remaining bombs:
-                <div class="in-line" id="remaining_bombs"></div>
+            </div>
+            <div class="controls" id="controls">
+                <div>
+                    <div class="in-line bold">
+                        Toggle flag:
+                    </div>
+                    <div class="in-line">
+                        f
+                    </div>
+                </div>
+
+                <div>
+                    <div class="in-line bold">
+                        Open cell:
+                    </div>
+                    <div class="in-line">
+                        d
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-    <div id="controls" class="controls">
-        <button onclick="generateBoard()">Restart</button>
+
     </div>
 </main>
 </body>
