@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>KnightSweeper</title>
+    <script src="game.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main>
+    <div class="game">
+        <div id="board" class="board">
+
+        </div>
+        <div id="game_data" class="game_data">
+            <div>
+                <div>
+                    <label>
+                        Bombs
+                        <input id="bombs" type="number" value="100"/>
+                    </label>
+                </div>
+                <div>
+                    <label>
+                        Rows:
+                        <input id="rows" type="number" value="20"/>
+                    </label>
+                </div>
+
+                <div>
+                    <label>
+                        Columns:
+                        <input id="columns" type="number" value="20"/>
+                    </label>
+                </div>
+                Remaining bombs:
+                <div class="in-line" id="remaining_bombs"></div>
+            </div>
+        </div>
+    </div>
+    <div id="controls" class="controls">
+        <button onclick="generateBoard()">Restart</button>
+    </div>
+</main>
+</body>
+</html>

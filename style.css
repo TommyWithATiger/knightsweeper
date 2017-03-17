@@ -1,0 +1,51 @@
+.cell {
+    display: table-cell;
+    width: 20px;
+    height: 20px;
+    background-color: #e2e2e2;
+    margin: 0;
+    border: 1px solid #d3d3d3;
+    padding: 0;
+    text-align: center;
+    font-family: Andale Mono;
+}
+
+.board {
+    border: 2px solid gray;
+    display: inline-block;
+}
+
+.game_data {
+    display: inline-block;
+    height: 100%;
+}
+
+.in-line {
+    display: inline-block;
+}
+
+.cell_closed {
+    color: #e2e2e2;
+}
+
+.cell_open {
+    border: 1px solid #000000;
+    background-color: #f0f0f0;
+}
+
+.cell_bomb {
+    background-color: #000000;
+}
+
+.cell_flagged {
+    background-color: #0000ff;
+    border: 1px solid #000000;
+    color: #0000ff;
+}
+
+.row {
+    margin: 0;
+    display: table-row;
+    height: 22px;
+    padding: 0;
+}
