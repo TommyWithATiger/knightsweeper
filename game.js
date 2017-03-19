@@ -1,4 +1,5 @@
 let lost = false;
+let firstAction = true;
 let time = 0;
 setInterval(function () {
    if (!lost) {
@@ -76,8 +77,9 @@ class Cell {
 }
 
 
-function generateBoard() {
+function generateBoard(noBombX, noBombY) {
     lost = false;
+    firstAction = true;
     time = 0;
 
     let board = document.getElementById("board");
@@ -105,14 +107,14 @@ function generateBoard() {
     }
 
     let bombs = parseInt(document.getElementById("bombs").value);
-    bombs = Math.min(width * height, bombs);
+    bombs = Math.min(width * height - 1, bombs);
     document.getElementById("remaining_bombs").textContent = (String)(bombs);
 
     while (bombs > 0) {
         let x = Math.floor(Math.random() * width);
         let y = Math.floor(Math.random() * height);
 
-        if (!board_array[x][y].hasBomb()) {
+        if (!board_array[x][y].hasBomb() && !(x == noBombX && y == noBombY)) {
             bombs--;
             board_array[x][y].setBomb();
         }
@@ -122,6 +124,10 @@ function generateBoard() {
         for (let y = 0; y < height; y++) {
             board_array[x][y].setNearbyBombs();
         }
+    }
+
+    if (isInBoard(board_array, noBombX, noBombY)) {
+        board_array[noBombX][noBombY].getCellElement().classList.toggle("hovered", true);
     }
 
     document.body.onkeydown = function (e) {
@@ -155,6 +161,11 @@ function generateBoard() {
         else if (keycode == 68) {
             if (cell.isFlagged()) return;
             if (cell.hasBomb()) {
+                if (firstAction) {
+                    generateBoard(cellEl.getAttribute("x"), cellEl.getAttribute("y"));
+                    document.body.onkeydown(e);
+                    return;
+                }
                 displayLost(board_array);
                 lost = true;
                 document.getElementById("status").textContent = "Game lost!"
@@ -167,6 +178,7 @@ function generateBoard() {
                 cell.open();
             }
         }
+        firstAction = false;
     };
 }
 
@@ -236,5 +248,5 @@ function hasBomb(board, x, y) {
 }
 
 window.onload = function () {
-    generateBoard();
+    generateBoard(-1, -1);
 };
