@@ -1,5 +1,15 @@
 let lost = false;
-
+let time = 0;
+setInterval(function () {
+   if (!lost) {
+       time += 1;
+       let timeMinutes = Math.floor(time / 60);
+       let timeSeconds = time % 60;
+       timeSeconds = (String) (timeSeconds);
+       timeSeconds = timeSeconds.length == 2 ? timeSeconds : "0" + timeSeconds;
+       document.getElementById("time").textContent = timeMinutes + ":" + timeSeconds;
+   }
+}, 1000);
 
 class Cell {
 
@@ -68,6 +78,8 @@ class Cell {
 
 function generateBoard() {
     lost = false;
+    time = 0;
+
     let board = document.getElementById("board");
     while (board.hasChildNodes()) {
         board.removeChild(board.firstChild);
